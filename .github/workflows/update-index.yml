@@ -37,8 +37,8 @@ jobs:
         git config --global user.name 'Proton-Registry-Bot'
         git config --global user.email 'proton-bot@users.noreply.github.com'
         
-        # Adiciona explicitamente os dois arquivos gerados
-        git add full_index.json smart_index.json
+        # Adiciona as mudanças dentro da pasta api/
+        git add api/
         
         # Lógica de verificação:
         # git diff --staged --quiet retorna erro (exit 1) se houver mudanças para commitar.

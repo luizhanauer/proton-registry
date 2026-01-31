@@ -24,7 +24,7 @@ Seu cliente ou script pode consumir os seguintes arquivos:
 | `full_index.json` | Histórico completo de todas as versões já lançadas. | Arquivamento / Pesquisa. |
 
 **Exemplo de URL para o `smart_index.json`:**
-`https://raw.githubusercontent.com/luizhanauer/proton-registry/main/smart_index.json`
+`https://raw.githubusercontent.com/luizhanauer/proton-registry/main/api/smart_index.json`
 
 ## 🛠️ Tecnologias
 

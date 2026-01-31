@@ -34,34 +34,34 @@ const (
 	repoOwner      = "GloriousEggroll"
 	repoName       = "proton-ge-custom"
 	apiBase        = "https://api.github.com/repos/" + repoOwner + "/" + repoName
-	fullIndexFile  = "full_index.json"
-	smartIndexFile = "smart_index.json"
+	fullIndexFile  = "api/full_index.json"
+	smartIndexFile = "api/smart_index.json"
 )
 
 func main() {
-	fmt.Println("🤖 Iniciando Indexador Inteligente...")
+	fmt.Println("🤖 Iniciando Proton Registry...")
 
-	client := &http.Client{Timeout: 60 * time.Second}
-
-	// 1. VERIFICAÇÃO RÁPIDA: Precisamos atualizar?
-	if !needsUpdate(client) {
-		fmt.Println("✅ O repositório já está atualizado. Encerrando sem alterações.")
+	// Garante que a pasta api/ existe
+	if err := os.MkdirAll("api", 0755); err != nil {
+		fmt.Printf("❌ Erro ao criar pasta api: %v\n", err)
 		return
 	}
 
-	fmt.Println("🚀 Nova versão detectada! Iniciando scraping completo...")
+	client := &http.Client{Timeout: 60 * time.Second}
 
-	// 2. SCRAPING COMPLETO (Se houver atualização)
+	if !needsUpdate(client) {
+		fmt.Println("✅ O registro já está atualizado. Encerrando.")
+		return
+	}
+
+	fmt.Println("🚀 Nova versão detectada! Atualizando índices...")
 	fullList := scrapeAllReleases(client)
 
-	// 3. GERAR FULL INDEX (Histórico)
 	saveJSON(fullIndexFile, fullList)
-
-	// 4. GERAR SMART INDEX (Otimizado para o cliente)
 	smartList := generateSmartList(fullList)
-	saveJSON(smartIndexFile, smartList) // <-- ESSE é o que seu app vai baixar
+	saveJSON(smartIndexFile, smartList)
 
-	fmt.Println("🎉 Tudo pronto! Arquivos atualizados.")
+	fmt.Println("🎉 Tudo pronto! Arquivos na pasta api/ atualizados.")
 }
 
 // --- Lógica de Verificação (Economia de Recursos) ---
