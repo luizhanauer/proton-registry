@@ -1,5 +1,12 @@
 [
   {
+    "version": "GE-Proton10-32",
+    "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton10-32/GE-Proton10-32.tar.gz",
+    "size": 515874267,
+    "date": "2026-02-16",
+    "major": "Proton10"
+  },
+  {
     "version": "GE-Proton10-31",
     "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton10-31/GE-Proton10-31.tar.gz",
     "size": 515871387,
@@ -60,13 +67,6 @@
     "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton10-23/GE-Proton10-23.tar.gz",
     "size": 508687020,
     "date": "2025-10-28",
-    "major": "Proton10"
-  },
-  {
-    "version": "GE-Proton10-22",
-    "url": "https://github.com/GloriousEggroll/proton-ge-custom/releases/download/GE-Proton10-22/GE-Proton10-22.tar.gz",
-    "size": 513203278,
-    "date": "2025-10-27",
     "major": "Proton10"
   },
   {
