@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proton Registry API</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --panel-bg: #1f2833;
+            --accent-primary: #66fcf1;
+            --accent-secondary: #45a29e;
+            --text-main: #c5c6c7;
+            --text-muted: #8b949e;
+            --glow: 0 0 15px rgba(102, 252, 241, 0.3);
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background-image: 
+                radial-gradient(circle at top right, rgba(31, 40, 51, 0.8), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(31, 40, 51, 0.8), transparent 40%);
+        }
+        .container {
+            max-width: 650px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1.5px;
+            background: linear-gradient(90deg, #cba6f7, var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--glow);
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .credits {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            padding: 0.5rem;
+            background: rgba(31, 40, 51, 0.4);
+            border-radius: 6px;
+            display: inline-block;
+        }
+        a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            transition: text-shadow 0.2s, color 0.2s;
+        }
+        a:hover {
+            text-shadow: var(--glow);
+            color: #fff;
+        }
+        .endpoint {
+            background-color: var(--panel-bg);
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .endpoint::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent-secondary);
+            transition: background-color 0.3s ease;
+        }
+        .endpoint:hover {
+            border-color: var(--accent-secondary);
+            box-shadow: var(--glow);
+            transform: translateY(-2px);
+        }
+        .endpoint:hover::before {
+            background-color: var(--accent-primary);
+        }
+        .endpoint-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-primary);
+            margin-bottom: 0.75rem;
+            display: block;
+            font-weight: bold;
+        }
+        .code-block {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #050608;
+            padding: 0.85rem 1rem;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+            font-size: 0.9rem;
+            color: #e6edf3;
+            word-break: break-all;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--accent-secondary);
+            color: var(--accent-primary);
+            border-radius: 4px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            margin-left: 15px;
+            flex-shrink: 0;
+        }
+        .copy-btn:hover {
+            background-color: var(--accent-primary);
+            color: var(--bg-color);
+            box-shadow: 0 0 10px var(--accent-primary);
+        }
+        .copy-btn.copied {
+            border-color: #238636;
+            color: #3fb950;
+        }
+        .donation-section {
+            margin-top: 4rem;
+            padding: 1.5rem;
+            background: linear-gradient(180deg, transparent, rgba(31, 40, 51, 0.6));
+            border-radius: 8px;
+            border-top: 1px solid rgba(69, 162, 158, 0.2);
+        }
+        .donation-text {
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        footer {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        footer p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Proton Registry</h1>
+        <p class="subtitle">API estática de alto desempenho para consulta de versões do Proton-GE Custom.</p>
+        
+        <div class="credits">
+            Todos os binários e releases originais pertencem ao projeto <a href="https://github.com/GloriousEggroll/proton-ge-custom" target="_blank">GloriousEggroll/proton-ge-custom</a>.
+        </div>
+
+        <div class="endpoint">
+            <span class="endpoint-label">Smart Index (Recomendado)</span>
+            <div class="code-block">
+                <span id="smart-url">https://luizhanauer.github.io/proton-registry/api/smart_index.json</span>
+                <button class="copy-btn" onclick="copyToClipboard('smart-url', this)">Copiar</button>
+            </div>
+        </div>
+
+        <div class="endpoint">
+            <span class="endpoint-label">Full Index</span>
+            <div class="code-block">
+                <span id="full-url">https://luizhanauer.github.io/proton-registry/api/full_index.json</span>
+                <button class="copy-btn" onclick="copyToClipboard('full-url', this)">Copiar</button>
+            </div>
+        </div>
+
+        <div class="donation-section">
+            <p class="donation-text">
+                Se você gostou do meu trabalho e quer me agradecer,<br> 
+                você pode me pagar um café :)
+            </p>
+            <a href="https://www.paypal.com/donate/?hosted_button_id=SFR785YEYHC4E" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" 
+                     alt="Buy Me A Coffee" 
+                     style="height: 50px !important; width: auto !important; border-radius: 5px; transition: transform 0.2s;"
+                     onmouseover="this.style.transform='scale(1.05)'"
+                     onmouseout="this.style.transform='scale(1)'">
+            </a>
+        </div>
+
+        <footer>
+            <p>Desenvolvido com 💜 por <a href="https://github.com/luizhanauer" target="_blank">Luiz Hanauer</a></p>
+            <p style="margin-top: 5px;"><a href="https://github.com/luizhanauer/proton-registry" target="_blank">Ver código no GitHub</a></p>
+        </footer>
+    </div>
+
+    <script>
+        function copyToClipboard(elementId, btnElement) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btnElement.innerText;
+                const originalClass = btnElement.className;
+                
+                btnElement.innerText = 'Copiado!';
+                btnElement.classList.add('copied');
+                
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                    btnElement.className = originalClass;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
