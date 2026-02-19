@@ -1,0 +1,69 @@
+name: Generate Portfolio Screenshots
+
+on: 
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  screenshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install playwright
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Create Assets Directory
+        run: mkdir -p static/assets
+
+      - name: Take Screenshots
+        env:
+          # Define a URL alvo via variável de ambiente para manter o JS limpo
+          TARGET_URL: ${{ github.event.repository.homepage || format('https://github.com/{0}', github.repository) }}
+        run: |
+          node -e "
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+            
+            console.log('🌐 Acessando:', process.env.TARGET_URL);
+            await page.goto(process.env.TARGET_URL);
+            await page.waitForTimeout(2000); // Espera o conteúdo carregar/animações
+
+            // Função helper para aplicar DRY na captura de telas
+            const takeShot = async (width, height, filename) => {
+              console.log(\`📸 Capturando \${width}x\${height} -> \${filename}\`);
+              await page.setViewportSize({ width, height });
+              await page.screenshot({ path: \`static/assets/\${filename}\` });
+            };
+
+            // Captura as duas resoluções solicitadas
+            await takeShot(1280, 720, 'screenshot.png');
+            await takeShot(1280, 520, 'screenshot_featured.png');
+
+            await browser.close();
+          })();
+          "
+
+      - name: Commit and Push to Main
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Adiciona as imagens geradas na pasta static
+          git add static/assets/
+          
+          # Lógica de verificação: só commita se houve mudança visual real na imagem
+          git diff --staged --quiet || (git commit -m "chore(assets): atualizar screenshots do projeto [skip ci]" && git push origin main)
