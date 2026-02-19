@@ -1,47 +1,56 @@
-name: Update Proton Registry
+name: Update and Deploy API to Pages
 
 on:
   schedule:
-    # Roda diariamente à meia-noite UTC
-    - cron: '0 0 * * *'
-  workflow_dispatch:
-    # Permite rodar manualmente clicando num botão na aba "Actions"
+    - cron: '0 0 * * *' # Roda diariamente
+  workflow_dispatch:      # Botão manual
 
+# Permissões necessárias para fazer deploy no GitHub Pages
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+# Garante que apenas um deploy ocorra por vez
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  update-index:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6.0.2
+      uses: actions/checkout@v4
 
     - name: Set up Go
-      uses: actions/setup-go@v6.2.0
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.25.6' # Versão estável recente
+        go-version: '1.22'
 
-    # Compila o binário para garantir que o código está íntegro antes de rodar
     - name: Build Registry App
-      run: go build -ldflags="-s -w" -o proton-registry main.go
+      run: go build -ldflags="-s -w" -o proton-registry ./cmd/registry
 
-    # Executa o binário compilado
-    - name: Run Registry Update
+    - name: Run Registry Update (Generates public/ folder)
       run: ./proton-registry
 
-    - name: Commit and Push changes
-      run: |
-        # Configura o usuário do Git como um Bot
-        git config --global user.name 'Proton-Registry-Bot'
-        git config --global user.email 'proton-bot@users.noreply.github.com'
-        
-        # Adiciona as mudanças dentro da pasta api/
-        git add api/
-        
-        # Lógica de verificação:
-        # git diff --staged --quiet retorna erro (exit 1) se houver mudanças para commitar.
-        # O "||" pega esse erro e executa o commit.
-        # Se não houver mudanças, o comando termina silenciosamente sem erro.
-        git diff --staged --quiet || (git commit -m "Update indexes [skip ci]" && git push)
+    - name: Inject Static Frontend
+      run: cp -r static/* public/ || true
+
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+
+    # Pega apenas a pasta "public/" e prepara para o Pages
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './public'
+
+    # Faz o deploy para o servidor web (https://luizhanauer.github.io/...)
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
